@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전북과학고등학교 Music Watch</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #000; /* 배경을 검정색으로 설정 */
+            margin: 0;
+        }
+        .header {
+            color: #fff;
+            font-size: 48px;
+            margin-bottom: 30px;
+            position: absolute;
+            top: 20px;
+        }
+        .date {
+            color: #fff;
+            font-size: 48px;
+            margin-bottom: 10px;
+            position: absolute;
+            top: 100px;
+        }
+        .clock {
+            font-size: 360px;
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: #fff;
+            font-size: 48px;
+            position: absolute;
+            bottom: 20px;
+        }
+        .music-player {
+            color: #fff;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        button, input[type="file"] {
+            font-size: 18px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">전북과학고등학고</div>
+    <div class="date" id="date">0000년 00월 00일 (요일)</div> <!-- 날짜 및 요일 -->
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="message">크롬 열고 계정에 로그인 하세요</div>
+
+    <div class="music-player">
+        <label for="mp3File">MP3 파일 선택:</label>
+        <input type="file" id="mp3File" accept=".mp3" /> <!-- MP3 파일만 선택 가능 -->
+        <button onclick="playMusic()">재생</button>
+        <button onclick="pauseMusic()">정지</button>
+    </div>
+
+    <audio id="audioPlayer" controls style="display: none;"></audio> <!-- 오디오 플레이어 -->
+
+    <script>
+        let isPlaying = false;  // 음악이 재생 중인지 상태를 저장하는 변수
+
+        function updateClock() {
+            const clockElement = document.getElementById('clock');
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateDate() {
+            const dateElement = document.getElementById('date');
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const weekDayNames = ['일', '월', '화', '수', '목', '금', '토'];
+            const weekDay = weekDayNames[now.getDay()];
+            dateElement.textContent = `${year}년 ${month}월 ${day}일 (${weekDay}요일)`;
+        }
+
+        setInterval(updateClock, 1000);
+        setInterval(updateDate, 1000);
+        updateClock();
+        updateDate();
+
+        function playMusic() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const mp3File = document.getElementById('mp3File').files[0];
+
+            if (mp3File) {
+                const fileURL = URL.createObjectURL(mp3File);
+                audioPlayer.src = fileURL;
+                audioPlayer.style.display = 'block'; // 오디오 플레이어 표시
+                audioPlayer.play();
+                isPlaying = true;  // 재생 상태 설정
+
+                // 음악이 끝날 때마다 다시 재생 (연속 재생)
+                audioPlayer.onended = function () {
+                    if (isPlaying) {
+                        audioPlayer.play();  // 음악을 다시 재생
+                    }
+                };
+            } else {
+                alert('MP3 파일을 선택하세요.');
+            }
+        }
+
+        function pauseMusic() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.pause();
+            isPlaying = false;  // 재생 상태를 멈춤으로 변경
+        }
+    </script>
+
+</body>
+</html>
